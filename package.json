@@ -43,13 +43,7 @@
     "cordova-plugin-crosswalk-webview"
   ],
   "cordovaPlatforms": [
-    "ios",
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
-    },
-    "android"
+    "ios"
   ],
   "name": "campermate",
   "description": "campermate: An Ionic project"

@@ -18,7 +18,6 @@ export class GoogleMaps {
     apiKey:string;
 
     constructor(public connectivity: Connectivity) {
-
     }
 
     init(mapElement:any, pleaseConnect:any):any {
@@ -40,7 +39,8 @@ export class GoogleMaps {
             this.disableMap();
 
             if (this.connectivity.isOnline()) {
-                window.mapInit = () => {
+
+                window['mapInit'] = () => {
                     this.initMap();
                     this.enableMap();
                 };

@@ -77,7 +77,7 @@ export class LocationPage {
                     },
                     {
                         text: 'Launch away!',
-                        handler: () => {
+                        handler: data => {
                             // TODO: launch the external maps app.
                         }
                     }

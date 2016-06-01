@@ -8,9 +8,12 @@
 // App Shared Sass variables belong in app.variables.scss.
 
 @import '../pages/home/home';
+
 @import "../pages/location/location.scss";
 @import "../pages/my-details/my-details.scss";
 @import "../pages/camp-details/camp-details.scss";
+@import "../pages/quicklists-home/quicklists-home.scss";
+@import "../pages/checklist/checklist.scss";
 
 button {
   border: none !important;
