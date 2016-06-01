@@ -1,16 +1,8 @@
-<ion-navbar *navbar>
-  <ion-title>
-    Home
-  </ion-title>
-</ion-navbar>
+<ion-tabs>
 
-<ion-content class="home">
-  <ion-card>
-    <ion-card-header>
-      Card Header
-    </ion-card-header>
-    <ion-card-content>
-      Hello World
-    </ion-card-content>
-  </ion-card>
-</ion-content>
+  <ion-tab> [root]="tab1Root" tabTitle="Location" tabIcon="navigate"></ion-tab>
+  <ion-tab> [root]="tab2Root" tabTitle="My Details" tabIcon="person"></ion-tab>
+  <ion-tab> [root]="tab3Root" tabTitle="Camp Details" tabIcon="bookmarks"></ion-tab>
+  <ion-tab> [root]="tab4Root" tabTitle="Checklists" tabIcon="checkbox"></ion-tab>
+
+</ion-tabs>

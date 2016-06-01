@@ -1,39 +1,136 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
-import 'rxjs/add/operator/map';
+import {Connectivity} from '../../providers/connectivity/connectivity';
+import {Geolocation} from 'ionic-native';
+import {Observable} from 'rxjs/Observable';
 
-/*
-  Generated class for the GoogleMaps provider.
+declare var google;
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular 2 DI.
-*/
 @Injectable()
 export class GoogleMaps {
-  data: any = null;
 
-  constructor(public http: Http) {}
+    mapElement:any;
+    pleaseConnect:any;
+    map:any;
+    mapInitialised:boolean = false;
+    mapLoaded:any;
+    mapLoadedObserver:any;
+    currentMarker:any;
+    apiKey:string;
 
-  load() {
-    if (this.data) {
-      // already loaded data
-      return Promise.resolve(this.data);
+    constructor(public connectivity: Connectivity) {
+
     }
 
-    // don't have the data yet
-    return new Promise(resolve => {
-      // We're using Angular Http provider to request the data,
-      // then on the response it'll map the JSON data to a parsed JS object.
-      // Next we process the data and resolve the promise with the new data.
-      this.http.get('path/to/data.json')
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          this.data = data;
-          resolve(this.data);
+    init(mapElement:any, pleaseConnect:any):any {
+        this.mapElement = mapElement;
+        this.pleaseConnect = pleaseConnect;
+
+        this.mapLoaded = Observable.create(observer => {
+            this.mapLoadedObserver = observer;
         });
-    });
-  }
+
+        this.loadGoogleMaps();
+
+        return this.mapLoaded;
+    }
+
+    loadGoogleMaps():void {
+        if (typeof google == "undefined" || typeof google.maps == "undefined") {
+            console.log("Google maps JavaScript needs to be loaded.");
+            this.disableMap();
+
+            if (this.connectivity.isOnline()) {
+                window.mapInit = () => {
+                    this.initMap();
+                    this.enableMap();
+                };
+
+                let script = document.createElement("script");
+                script.id = "googleMaps";
+
+                if (this.apiKey) {
+                    script.src = 'http://maps.google.com/maps/api/js?key=' + this.apiKey + '&callback=mapInit';
+                } else {
+                    script.src = 'http://maps.google.com/maps/api/js?callback=mapInit';
+                }
+
+                document.body.appendChild(script);
+            }
+        } else {
+            if (this.connectivity.isOnline()) {
+                this.initMap();
+                this.enableMap();
+            } else {
+                this.disableMap();
+            }
+        }
+
+        this.addConnectivityListeners();
+    }
+
+    initMap():void {
+        this.mapInitialised = true;
+        Geolocation.getCurrentPosition().then((position) => {
+            let latlong = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+            let mapopts = {
+                center: latlong,
+                zoom: 15,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            this.map = new google.maps.Map(this.mapElement, mapopts);
+            this.mapLoadedObserver.next(true);
+        });
+    }
+
+    disableMap():void {
+        if (this.pleaseConnect) {
+            this.pleaseConnect.style.display = "block";
+        }
+    }
+
+    enableMap():void {
+        if (this.pleaseConnect) {
+            this.pleaseConnect.style.display = "none";
+        }
+    }
+
+    addConnectivityListeners():void {
+        document.addEventListener('online', () => {
+            console.log("online - victory!");
+            setTimeout(() => {
+                if (typeof google == "undefined" || typeof google.maps == "undefined") {
+                    this.loadGoogleMaps();
+                } else {
+                    if (!this.mapInitialised) {
+                        this.initMap();
+                    }
+
+                    this.enableMap();
+                }
+            }, 2000);
+        }, false);
+
+        document.addEventListener('offline', () => {
+            console.log("offline - disaster!");
+            this.disableMap();
+        }, false);
+    }
+
+    changeMarker(lat:number, lng:number):void {
+        let latlong = new google.maps.LatLng(lat, lng);
+        let marker = new google.maps.Marker({
+            map: this.map,
+            animation: google.maps.Animation.DROP,
+            position: latlong
+        });
+
+        if (this.currentMarker) {
+            this.currentMarker.setMap(null);
+        }
+
+        this.currentMarker = marker;
+    }
 }
 

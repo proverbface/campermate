@@ -1,0 +1,12 @@
+{
+    "ios": {
+        "debug": {
+            "codeSignIdentity": "iPhone Developer: John Clayton (9GP2W42JW2)",
+            "provisioningProfile": "0599d0d7-373a-429c-b154-fb934ba70573"
+        },
+        "release": {
+            "codeSignIdentity": "iPhone Distribution",
+            "provisioningProfile": "70f699ad-faf1-4adE-8fea-9d84738fb306"
+        }
+    }
+}
